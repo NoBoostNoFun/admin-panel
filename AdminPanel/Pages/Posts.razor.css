@@ -1,0 +1,49 @@
+﻿.header {
+    padding: 5px;
+}
+.post {
+    margin-bottom: 30px;
+}
+
+.back {
+    margin-right: 10px;
+}
+
+.date {
+    text-align: right;
+    width: 100%;
+    border-bottom: 1px solid;    
+    margin-bottom: 5px;
+}
+
+.post-content {
+    display: flex;    
+}
+
+.info {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 300px;
+    padding: 10px;
+}
+
+.tag {
+    background-color: lightgray;
+    padding: 1px 5px;
+    border-radius: 5px;
+    margin: 3px;
+}
+
+.image {
+    max-width: 50%;
+}
+
+@media screen and (max-width: 1000px) {
+    .image {
+        max-width: 100%;
+    }
+    .post-content {
+        flex-direction: column;
+    }
+}

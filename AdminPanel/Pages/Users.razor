@@ -1,0 +1,52 @@
+﻿@page "/users"
+@attribute [Authorize]
+@using AdminPanel.Services
+@using System.Threading
+@inject IUserService UserService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Users</PageTitle>
+
+@if (_users == null)
+{
+    <Loading/>
+}
+else
+{
+    <div class="search">
+        <input type="text" @bind-value="_searchText" @oninput="FilterChanged" placeholder="Search by name"/>
+    </div>
+    <div class="users">
+        @foreach (var user in _users)
+        {
+            <div class="user" onclick="@(() => OpenPosts(user.Id))">
+                <div class="image">
+                    <img src="@user.Picture" alt="Picture"/>
+                </div>
+                <div class="name">@user.Name</div>
+            </div>
+        }
+    </div>
+}
+
+@code {
+
+    private User[]? _users;
+    private string _searchText = "";
+
+    protected override async Task OnInitializedAsync() =>
+        _users = await UserService.GetAllUsers(CancellationToken.None);
+
+    private void OpenPosts(string userId)
+        => NavigationManager.NavigateTo($"/user/{userId}/posts");
+
+    private async Task FilterChanged(ChangeEventArgs args)
+    {
+        _searchText = args.Value?.ToString() ?? "";
+
+        _users = (await UserService.GetAllUsers(CancellationToken.None))
+            .Where(w => w.Name.ToLower().Contains(_searchText.ToLower()))
+            .ToArray();
+    }
+
+}

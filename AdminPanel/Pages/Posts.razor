@@ -1,0 +1,68 @@
+﻿@page "/user/{UserId}/posts"
+@attribute [Authorize]
+@using System.Threading
+@using AdminPanel.Services
+@inject IUserService UserService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Posts</PageTitle>
+
+@if (_posts == null)
+{
+    <Loading/>
+}
+else
+{
+    <div class="header">
+        <h1>
+            <button class="back" onclick="@GoBack">@("<")</button>
+            @if (string.IsNullOrWhiteSpace(_ownerName))
+            {
+                <span>User has no posts</span>
+            }
+            else
+            {
+                <span>Posts of @_ownerName</span>
+            }
+        </h1>
+    </div>
+    <div class="posts">
+        @foreach (var post in _posts)
+        {
+            <div class="post">
+                <div class="date">@post.PublishDate</div>
+                <div class="post-content">
+                    <img class="image" src="@post.Image" alt="Picture"/>
+                    <div class="info">
+                        <div>@post.Text</div>
+                        <div>
+                            @foreach (var tag in post.Tags)
+                            {
+                                <label class="tag">@tag</label>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@code {
+
+    private string? _ownerName;
+    private UserPost[]? _posts;
+
+    [Parameter]
+    public string UserId { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _posts = await UserService.GetUserPosts(UserId, CancellationToken.None);
+        _ownerName = _posts?.FirstOrDefault()?.OwnerName;
+    }
+
+    private void GoBack()
+        => NavigationManager.NavigateTo("/users");
+
+}
